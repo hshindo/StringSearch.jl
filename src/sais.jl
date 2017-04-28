@@ -1,5 +1,4 @@
-function sais{T}(text::Vector{T}, fs::Int, n::Int, k::Int, isbwt::Bool)
-    sa = Array{Int}(n)
+function sais{T}(text::Vector{T}, sa::Vector{Int}, fs::Int, n::Int, k::Int, isbwt::Bool)
     pidx = 0
     flags = 0
     if k <= 256
@@ -92,7 +91,7 @@ function sais{T}(text::Vector{T}, fs::Int, n::Int, k::Int, isbwt::Bool)
             end
         end
         RA = offset_to_array(sa, m+newfs+1)
-        sais(RA, sa, newfs, m, name != 0)
+        sais(RA, sa, newfs, m, name, false)
 
         i = n
         j = 2m
@@ -162,7 +161,7 @@ function sais{T}(text::Vector{T}, fs::Int, n::Int, k::Int, isbwt::Bool)
     induceSA(text, sa, C, B, n, k)
     sa+1
 end
-sais(text) = sais(text, 0, length(text), 65536, false)
+sais(text::Vector) = sais(text, Array{Int}(length(text)), 0, length(text), 65536, false)
 
 function setcounts!{T}(text::Vector{T}, C::Vector{Int}, n::Int, k::Int)
     for i = 1:k
