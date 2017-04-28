@@ -35,4 +35,25 @@ function substrings{T}(t1::Vector{T}, t2::Vector{T})
 end
 substrings(t1::String, t2::String) = substrings(collect(t1), collect(t2))
 
+export longestsubstring
+function longestsubstring{T}(t1::Vector{T}, t2::Vector{T})
+    m = length(t1)
+    text = copy(t1)
+    append!(text, t2)
+    sa = sais(text)
+    lcps = lcparray(text, sa)
+    r1, r2 = 0:0, 0:0
+    for i = 2:length(text)
+        k1, k2 = sa[i-1], sa[i]
+        (k1 <= m) == (k2 <= m) && continue
+        k1, k2 = k1 > k2 ? (k2,k1) : (k1,k2)
+        len = min(lcps[i], m-k1+1)
+        if length(r1) < len
+            r1 = k1:k1+len-1
+            r2 = (k2-m):(k2-m)+len-1
+        end
+    end
+    r1, r2
+end
+
 end

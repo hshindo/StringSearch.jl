@@ -64,7 +64,7 @@ function sais{T}(text::Vector{T}, sa::Vector{Int}, fs::Int, n::Int, k::Int, isbw
         end
     end
     if 1 < m
-        LMSsort(text, sa ,C, B, n, k)
+        LMSsort(text, sa, C, B, n, k)
         name = LMSpostproc(text, sa, n, m)
     elseif m == 1
         sa[b+1] = j + 1
