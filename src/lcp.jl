@@ -1,7 +1,7 @@
 """
     Kasai's algorithm for linear-time construction of LCP array from Suffix Array
 """
-function lcparray{T}(sa::Vector{Int}, text::Vector{T})
+function lcparray{T<:Integer}(sa::Vector{Int}, text::Vector{T})
     n = length(sa)
     lcps = similar(sa)
     rank = similar(sa)
