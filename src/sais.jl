@@ -52,7 +52,7 @@ function sais{T}(text::Vector{T}, sa::Vector{Int}, fs::Int, n::Int, k::Int, isbw
         end
         if 1 <= i
             0 <= b && (sa[b+1] = j)
-            b = (B[Int(c1)+1] -= 1)
+            b = (B[c1+1] -= 1)
             j = i-1
             m += 1
             c1 = c0
@@ -134,7 +134,7 @@ function sais{T}(text::Vector{T}, sa::Vector{Int}, fs::Int, n::Int, k::Int, isbw
         c1 = text[p+1]
         while true
             c0 = c1
-            q = B[Int(c0)+1]
+            q = B[c0+1]
             while q < j
                 j -= 1
                 sa[j+1] = 0
@@ -168,7 +168,7 @@ function setcounts!{T}(text::Vector{T}, C::Vector{Int}, n::Int, k::Int)
         C[i] = 0
     end
     for i = 1:n
-        C[Int(text[i])+1] += 1
+        C[text[i]+1] += 1
     end
 end
 
@@ -189,21 +189,21 @@ end
 
 offset_to_array(x::Vector, i::Int) = unsafe_wrap(Array, pointer(x,i), length(x)-i+1)
 
-function LMSsort{T}(text::Vector{T}, sa, C, B, n::Int, k::Int)
+function LMSsort{T<:Integer}(text::Vector{T}, sa, C, B, n::Int, k::Int)
     C == B && setcounts!(text, C, n, k)
     getbuckets(C, B, k, false)
     j = n - 1
     c1 = text[j+1]
-    b = B[Int(c1)+1]
+    b = B[c1+1]
     j -= 1
     sa[b+1] = text[j+1] < c1 ? ~j : j
     b += 1
     for i = 1:n
         if 0 < (j = sa[i])
             if (c0 = text[j+1]) != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             j -= 1
             sa[b+1] = text[j+1] < c1 ? ~j : j
@@ -215,15 +215,15 @@ function LMSsort{T}(text::Vector{T}, sa, C, B, n::Int, k::Int)
     end
     C == B && setcounts!(text, C, n, k)
     getbuckets(C, B, k, true)
-    c1 = Char(0)
-    b = B[Int(c1)+1]
+    c1 = 0
+    b = B[c1+1]
     for i = n:-1:1
         if 0 < (j = sa[i])
             c0 = text[j+1]
             if c0 != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             j -= 1
             b -= 1
@@ -301,7 +301,7 @@ function induceSA{T}(text::Vector{T}, sa::Vector{Int}, C::Vector{Int}, B::Vector
     getbuckets(C, B, k, false)
     j = n - 1
     c1 = text[j+1]
-    b = B[Int(c1)+1]
+    b = B[c1+1]
     sa[b+1] = 0 < j && text[j] < c1 ? ~j : j
     b += 1
     for i = 1:n
@@ -310,9 +310,9 @@ function induceSA{T}(text::Vector{T}, sa::Vector{Int}, C::Vector{Int}, B::Vector
         if 0 < j
             j -= 1
             if (c0 = text[j+1]) != c1
-                B[Int(c1)+1] = b
+                B[c1+1] = b
                 c1 = c0
-                b = B[Int(c1)+1]
+                b = B[c1+1]
             end
             sa[b+1] = 0 < j && text[j] < c1 ? ~j : j
             b += 1
@@ -325,13 +325,13 @@ function induceSA{T}(text::Vector{T}, sa::Vector{Int}, C::Vector{Int}, B::Vector
     for i = n:-1:1
         if 0 < (j = sa[i])
             j -= 1
-            if (c0 = Int(text[j+1])) != c1
+            if (c0 = text[j+1]) != c1
                 B[c1+1] = b
                 c1 = c0
                 b = B[c1+1]
             end
             b -= 1
-            sa[b+1] = j == 0 || Int(text[j]) > c1 ? ~j : j
+            sa[b+1] = j == 0 || text[j] > c1 ? ~j : j
         else
             sa[i] = ~j
         end

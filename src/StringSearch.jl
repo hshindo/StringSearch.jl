@@ -2,6 +2,6 @@ module StringSearch
 
 include("sais.jl")
 include("lcp.jl")
-include("diff.jl")
+include("align.jl")
 
 end
