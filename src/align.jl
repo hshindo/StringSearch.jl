@@ -1,5 +1,42 @@
 export align
 
+struct State
+    i1::Int
+    j1::Int
+    i2::Int
+    j2::Int
+    isfirst::Bool
+end
+
+isvalid(s::State) = s.i1 > 0 && s.i1 <= s.j1 && s.i2 > 0 && s.i2 <= s.j2
+
+function match(t1::Vector{Int}, t2::Vector{Int})
+    states = [State(1,length(t1),1,length(t2),true)]
+    aligns = Tuple[]
+    while !isempty(states)
+        st = pop!(states)
+        newst = getlcs(t1[st.i1:st.j1], t2[st.i2:st.j2], st.isfirst)
+        isvalid(newst) || continue
+
+        newst = (newst[1]+st.i1-1, newst.j1+st.i1-1, newst.i2+st.i2-1, newst.j2+st.i2-1)
+        isvalid(newst) || continue
+        push!(aligns, newst)
+
+        left = State(st.i1, newst.i1-1, st.i2, newst.i2-1, false)
+        right = State(newst.j1+1, st.j1, newst.j2+1, st.j2, true)
+        isvalid(left) && push!(states, left)
+        isvalid(right) && push!(states, right)
+    end
+
+    array = zeros(Int, length(t1))
+    for a in aligns
+        for i = 0:a.j1-a.i1
+            array[a.i1+i] = a.i2 + i
+        end
+    end
+    array
+end
+
 function align(t1::Vector{Int}, t2::Vector{Int})
     isvalid(st::NTuple{4,Int}) = st[1] > 0 && st[1] <= st[2] && st[3] > 0 && st[3] <= st[4]
     states = [((1,length(t1),1,length(t2)),true)]
@@ -19,13 +56,16 @@ function align(t1::Vector{Int}, t2::Vector{Int})
         isvalid(right) && push!(states, (right,true))
     end
 
-    dict = Dict{Int,Int}()
+    array = zeros(Int, length(t1))
+    #dict = Dict{Int,Int}()
     for a in aligns
         for i = 0:a[2]-a[1]
-            dict[a[1]+i] = a[3]+i
+            array[a[1]+i] = a[3] + i
+            #dict[a[1]+i] = a[3]+i
         end
     end
-    dict
+    array
+    #dict
 end
 
 function align(s1::String, s2::String)
